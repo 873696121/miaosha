@@ -42,9 +42,10 @@ public class OrderController extends BaseController {
         if(StringUtils.isEmpty(token)){
             throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
         }
-
-        //获取用户的登陆信息
-        UserModel userModel = (UserModel)httpServletRequest.getSession().getAttribute("LOGIN_USER");
+        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
+        if(userModel == null){
+            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
+        }
 
         OrderModel orderModel = orderService.createOrder(userModel.getId(),itemId,promoId,amount);
 
